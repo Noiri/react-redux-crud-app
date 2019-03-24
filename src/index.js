@@ -7,12 +7,20 @@ import reducer from './reducers'; //indexもしっかりと読み込むように
 import EventsIndex from './components/events_index';
 import * as serviceWorker from './serviceWorker';
 import thunk from 'redux-thunk';
+import {BrowserRouter, Route, Switch} from 'react-router-dom';
+import EventsNew from './components/events_new';
+
 
 const store = createStore(reducer, applyMiddleware(thunk));
 
 ReactDOM.render(
     <Provider store={store}>
-        <EventsIndex />
+        <BrowserRouter>
+            <Switch>
+                <Route exact path="/events/new" component={EventsNew}></Route>
+                <Route exact path="/" component={EventsIndex}></Route>
+            </Switch>
+        </BrowserRouter>
     </Provider>,
     document.getElementById('root')
 );
