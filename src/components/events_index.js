@@ -7,7 +7,7 @@ import _ from 'lodash';
 
 export class EventsIndex extends Component {
 	componentDidMount(){
-		this.props.readEvents();		
+		this.props.readEvents();
 	}
 
 	renderEvents(){
@@ -32,11 +32,9 @@ export class EventsIndex extends Component {
 					</tr>
 				</thead>
 				<tbody>{this.renderEvents()}</tbody>
-			</table>
-
-			<Link to="/events/new">New Event</Link>
-			</React.Fragment>
-		);
+				</table>
+				<Link to="/events/new">New Event</Link>
+			</React.Fragment> );
 	}
 }
 
