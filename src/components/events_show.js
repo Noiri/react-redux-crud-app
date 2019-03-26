@@ -1,14 +1,21 @@
 import React, {Component} from 'react';
 import {connect} from 'react-redux';
-import {postEvent} from '../actions';
+import {getEvent, deleteEvent, putEvent} from '../actions';
 import { Field, reduxForm } from 'redux-form';
 import {Link} from 'react-router-dom';
 
-export class EventsNew extends Component {
+export class EventsShow extends Component {
     constructor(props){
         super(props);
         this.onSubmit = this.onSubmit.bind(this);
+        this.onDeleteClick = this.onDeleteClick.bind(this);
     }
+
+    componentDidMount(){
+        const { id } = this.props.match.params;
+        if(id) this.props.getEvent(id);
+    }
+
     renderField(field){
             const { input, label, type, meta: { touched, error} } = field;
             return (<div>
@@ -18,28 +25,41 @@ export class EventsNew extends Component {
         }
     
     //onSubmitは非同期処理
-    async onSubmit(values){
-        await this.props.postEvent(values);
+    async onSubmit(value){
+        await this.props.putEvent(value);
+        this.props.history.push('/');
+    }
+
+    async onDeleteClick(){
+        const {id} = this.props.match.params;
+//        console.log(id);
+        await this.props.deleteEvent(id);
         this.props.history.push('/');
     }
 
     render(){
-        const {handleSubmit, pristine, submitting, invalid} = this.props;
-                
+        const {handleSubmit, submitting, invalid} = this.props;
+        
         return (
             <form onSubmit={handleSubmit(this.onSubmit)}>
                 <div><Field label="Title" name="title" type="text"  component={this.renderField} /></div>
                 <div><Field label="Body" name="body" type="text"  component={this.renderField} /></div>
                 <div>
-                <input type="submit" value="Submit" disabled={pristine || submitting || invalid} />
+                <input type="submit" value="Submit" disabled={submitting || invalid} />
                     <Link to="/" >Cancel</Link> 
+                    <Link to="/" onClick={this.onDeleteClick}>Delete</Link> 
                 </div>
             </form>
         );
     }
 }
 
-const mapDispatchToProps = ({postEvent});
+const mapDispatchToProps = ({deleteEvent, getEvent, putEvent});
+
+const mapStateToProps = (state, ownProps) => {
+    const event = state.events[ownProps.match.params.id];
+    return {initialValues : event, state};
+}
 
 const validate = values => {
     const errors = {};
@@ -51,9 +71,6 @@ const validate = values => {
 }
 
 
-export default connect(null, mapDispatchToProps)(
-    reduxForm({validate, form: 'eventNewForm' })(EventsNew)
+export default connect(mapStateToProps, mapDispatchToProps)(
+    reduxForm({validate, form: 'eventShowForm', enableReinitialize: true })(EventsShow)
 );
-
-
-//export default connect(null, null)(EventsNew);
